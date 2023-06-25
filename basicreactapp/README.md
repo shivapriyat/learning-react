@@ -1,3 +1,4 @@
+```
 node -v
 basicreactapp> npm init
 npm i --save-dev webpack webpack-cli webpack-dev-server
@@ -20,3 +21,4 @@ touch webpack.config.js
 touch .babelrc
 npm run build
 npm start
+```
