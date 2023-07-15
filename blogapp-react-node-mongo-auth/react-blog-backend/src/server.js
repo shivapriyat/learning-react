@@ -1,5 +1,5 @@
 import express from 'express';
-
+import {db,connectToMongoDB} from './mongodbconnect.js';
 const app = express();
 app.use(express.json())
 
@@ -20,10 +20,52 @@ let articleInfo = [
         comment: []
     }
 ];
-app.listen(8000, (req,res) => {
-    console.log("server listening on 8000");
+connectToMongoDB().then(()=> {
+    console.log("Connected to Mongo DB . Proceeding to start express server !");
+    app.listen(8000, (req,res) => {
+        console.log("server listening on 8000");
+    });
 });
 
+app.get("/api/v2/articles/:articleId", async(req,res)  => {
+    const {articleId} = req.params;
+    const article = await db.collection("articles").findOne({name: articleId});
+    if(article) {
+        res.json(article);
+    }
+    else {
+        res.sendStatus(404);
+    }
+});
+
+app.put("/api/v2/articles/:articleId/upvote", async(req,res)=> {
+    const {articleId} = req.params;
+    await db.collection("articles").updateOne({name: articleId},{
+        $inc: {upvotes:1}
+    });
+    const article = await db.collection("articles").findOne({name: articleId});
+    if(article) {
+        res.json(article);
+    }
+    else {
+        res.sendStatus(400);
+    }
+});
+
+app.post("/api/v2/articles/:articleId/comments", async(req,res) => {
+    const {articleId} = req.params;
+    const comment = req.body;
+    await db.collection("articles").updateOne( {name: articleId}, {
+        $push: {comments: comment }
+    });
+    const article = await db.collection("articles").findOne({name: articleId});
+    if(article) {
+        res.json(article);
+    }
+    else {
+        res.sendStatus(404);
+    }
+});
 
 app.get("/hello", (req,res) => {
     res.send("Hello from node!!");
