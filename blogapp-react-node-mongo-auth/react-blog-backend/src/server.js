@@ -54,9 +54,9 @@ app.put("/api/v2/articles/:articleId/upvote", async(req,res)=> {
 
 app.post("/api/v2/articles/:articleId/comments", async(req,res) => {
     const {articleId} = req.params;
-    const comment = req.body;
+    const {postedBy,text} = req.body;
     await db.collection("articles").updateOne( {name: articleId}, {
-        $push: {comments: comment }
+        $push: {comments: {postedBy,text} }
     });
     const article = await db.collection("articles").findOne({name: articleId});
     if(article) {
