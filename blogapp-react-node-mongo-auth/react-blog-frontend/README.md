@@ -3,6 +3,12 @@ npm install --save react-router-dom
 https://github.com/shaunwa/react-blog/blob/master/src/pages/article-content.js
 https://github.com/shaunwa/react-blog/blob/master/src/App.css
 
+<start mongod>
+npm run start <from frontend>
+npm run dev   <from backend>
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
