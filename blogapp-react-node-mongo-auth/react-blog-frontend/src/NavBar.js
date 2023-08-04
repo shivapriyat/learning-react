@@ -1,7 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import {getAuth,signOut} from 'firebase/auth'
+import {getAuth,signOut} from 'firebase/auth';
+import useUser from "./hooks/useUser";
 const NavBar = () => {
     const navigate = useNavigate();
+    const {user} = useUser();
     return (
         <nav>
             <ul>
@@ -15,8 +17,8 @@ const NavBar = () => {
                     <Link to="/articles">Articles</Link>
                 </li>
                 <div style={{float: 'right'}}>
-                <button onClick={()=> {navigate('/login')}}>Login</button>
-                <button onClick={()=> {signOut(getAuth())}}>signOut</button>
+                {!user ? <button onClick={()=> {navigate('/login')}}>Login</button>
+                : <button onClick={()=> {signOut(getAuth())}}>Logout</button>}
             </div>
             </ul>
 

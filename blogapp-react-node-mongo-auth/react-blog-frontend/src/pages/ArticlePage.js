@@ -11,19 +11,26 @@ const ArticlePage = () => {
     let params = useParams();
     let articleId = params.articleId;
 
-    let [articleInfo,setArticleInfo]=useState({upvotes:0,comments:[]});
+    let [articleInfo,setArticleInfo]=useState({upvotes:0,comments:[], canUpvote: false});
+    const {canUpvote} = articleInfo;
     const {user, isLoading} = useUser();
     const navigate = useNavigate();
     useEffect(()=> {
         const loadArticleInfo = async() => {
-            const response =await axios.get(`/api/v2/articles/${articleId}`);
+            const token = user && await user.getIdToken();
+            const headers = token ? {authtoken: token} : {}
+            const response =await axios.get(`/api/v2/articles/${articleId}`, {headers});
             let newArticleInfo=response.data;
             setArticleInfo(newArticleInfo);
         }
+        if(!isLoading) {
         loadArticleInfo();
-    });
+        }
+    }, [isLoading, user]);
     const addUpvote = async() => {
-        const response = await axios.put(`/api/v2/articles/${articleId}/upvote`);
+        const token = user && await user.getIdToken();
+        const headers = token ? {authtoken: token} : {};
+        const response = await axios.put(`/api/v2/articles/${articleId}/upvote`, null, {headers});
         const updatedArticleInfo = response.data;
         setArticleInfo(updatedArticleInfo);
     }
@@ -37,7 +44,7 @@ const ArticlePage = () => {
         <>
             <h1>{article.title}</h1>
             <div id="upvotes-section">
-                {user ? <button onClick={addUpvote}>Upvote</button> : <button><Link to="/login">Login to upvote</Link></button>}
+                {user ? <button onClick={addUpvote}>{canUpvote ? 'Upvote' : 'Already upvoted'}</button> : <button onClick={()=> { navigate('/login')}}>Login to upvote</button>}
                 <p>This article has {articleInfo.upvotes} upvote(s)</p>
             </div>
 
@@ -45,7 +52,7 @@ const ArticlePage = () => {
                 return (<p key={i}>{para}</p>)
             })}
             { user ? 
-            <AddCommentForm articleId={articleId} onNewCommentAdded={updatedArticleInfo => setArticleInfo(updatedArticleInfo)}/> : <button><Link to="/login">Login to upvote</Link></button> }
+            <AddCommentForm articleId={articleId} onNewCommentAdded={updatedArticleInfo => setArticleInfo(updatedArticleInfo)}/> : <button onClick={()=> { navigate('/login')}}>Login to upvote</button> }
             <CommentsList comments={articleInfo.comments} />
         </>
     )
