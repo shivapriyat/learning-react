@@ -100,3 +100,22 @@ nav a:hover {
   border-bottom: 2px solid black;
   padding: 16px;
 }
+input {
+  display: block;
+  margin: 8px;
+  padding: 8px;
+  min-width: 300px;
+  border: 2px solid black;
+}
+a {
+  text-decoration: none;
+}
+.error {
+  display: block;
+  background-color: lightcoral;
+  color: white;
+}
+
+button a {
+  color: white;
+}

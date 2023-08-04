@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 mongodb-data/
+react-blog-backend/credentials.json
 
 # testing
 /coverage
