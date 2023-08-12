@@ -2,6 +2,11 @@ import express from 'express';
 import {db,connectToMongoDB} from './mongodbconnect.js';
 import admin from 'firebase-admin';
 import fs from 'fs';
+import path from 'path';
+import "dotenv/config"
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const credentials = JSON.parse(fs.readFileSync("./credentials.json"));
 admin.initializeApp({
@@ -10,6 +15,11 @@ admin.initializeApp({
 
 const app = express();
 app.use(express.json())
+app.use(express.static(path.join(__dirname,'../build')));
+
+app.get(/^(?!\/api).+/, (req,res) => {
+    res.sendFile(path.join(__dirname,'../build/index.html'));
+})
 
 let articleInfo = [
     {
@@ -69,10 +79,12 @@ app.post("/api/articles/:articleName/comments", (req,res) => {
     }
 });
 
+
+const PORT = process.env.PORT || 8000;
 connectToMongoDB().then(()=> {
     console.log("Connected to Mongo DB . Proceeding to start express server !");
-    app.listen(8000, (req,res) => {
-        console.log("server listening on 8000");
+    app.listen(PORT, (req,res) => {
+        console.log("server listening on "+PORT);
     });
 });
 
